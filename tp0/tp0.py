@@ -136,7 +136,7 @@ def group_token_request(server_address, sas_list):
 
 def group_token_response(response):
     # Formato ajustado: "H12sI64s", totalizando 82 bytes
-    response_format = ">2H12sI64s"
+    response_format = ">2H80sI64s"
     # Certifique-se de que a resposta tem exatamente 82 bytes
     if len(response) != 148:
         raise ValueError(
@@ -145,19 +145,15 @@ def group_token_response(response):
     # Desempacota a resposta conforme o formato correto
     message_type, num_sas, sas = struct.unpack(response_format, response)
     # Decodifica o ID do estudante (removendo espaços extras)
-    student_id = student_id.decode("ascii").strip()
-    # Decodifica o token (a string hexadecimal de 64 bytes)
-    token = token.decode("ascii")
+    # student_id = student_id.decode("ascii").strip()
+    # # Decodifica o token (a string hexadecimal de 64 bytes)
+    sas = sas.decode("ascii")
     # Exibe os resultados
-    print(message_type, student_id, nonce, token)
+    print("***************************")
+    print(message_type, num_sas, sas)
+    print("***************************")
     tamanho_em_bytes = len(response)
     print("O tamanho da resposta group token request em bytes é:", tamanho_em_bytes)
-    # token_group = response[84:]
-    print("O token da resposta é:", token_group)
-    print(f"Resposta recebida de status:{responde_d}")
-    # group_token_validation(
-    #     ("150.164.213.243", 51001), student_id, nonce, token_group
-    # )
 
 
 def group_token_validation(server_address, student_id, nonce, token):
@@ -227,9 +223,9 @@ def main():
     # sas2 = {"student_id": student_id, "nonce": nonce, "token": token}
     # sas_list.append(sas2)
     print(sas_list)
-    # group_token_response(
-    group_token_request(("150.164.213.243", 51001), sas_list)
-    # )
+    # group_token_request(("150.164.213.243", 51001), sas_list)
+
+    group_token_response(group_token_request(("150.164.213.243", 51001), sas_list))
 
 
 if __name__ == "__main__":
